@@ -6,6 +6,7 @@ import Slider from './controls/slider-control';
 import VideoFeed from './video/video-feed';
 import Info from './controls/info/rpi-info';
 import Settings from './settings/settings';
+const uniqueString = require('unique-string');
 
 // const Settings = () => {
 //     return <div className='settings-panel'>settings here</div>;
@@ -16,31 +17,116 @@ class App extends Component {
     state = {
         videoFeeds: [
             {
-                id: 2,
-                url: '192.168.0.4',
+                id: uniqueString(),
+                ip: '192.168.55.12',
                 port: '8081',
                 caption: 'raw'
-            },
-            {
-                id: 1,
-                url: '192.168.0.18',
-                port: '5000',
-                caption: 'Processed Feed'
             }
         ],
-        rawFeedUrl: '192.168.0.4',
-        rawFeedPort: '8081',
-        OpencvFeedUrl: '192.168.0.18',
-        OpencvFeedPort: '5000',
-        websocketUrl: '192.168.0.4',
-        websocketPort: 5000,
+        websocketUrl: '192.168.55.11',
+        websocketPort: 5001,
         settingsShow: false
     };
+    constructor() {
+        super();
+        const oldState = localStorage.getItem('appState');
+        if (oldState) {
+            let state = JSON.parse(oldState);
+            state.settingsShow = false;
+            console.log('has state');
+            this.state = state;
+        } else {
+            console.log('has no state');
+            const s = {
+                videoFeeds: [
+                    {
+                        id: uniqueString(),
+                        ip: '192.168.55.12',
+                        port: '8081',
+                        caption: 'raw'
+                    }
+                ],
+                websocketUrl: '192.168.55.11',
+                websocketPort: 5001,
+                settingsShow: false
+            };
+            this.state = s;
+        }
+    }
 
     toggleSettingsPage = () => {
         const settings = this.state.settingsShow;
         this.setState({ settingsShow: !settings });
         console.log(!settings);
+        this.saveSettings();
+    };
+
+    addVideoFeed = () => {
+        const videoFeeds = [...this.state.videoFeeds];
+        const feed = {
+            id: uniqueString(),
+            ip: '192.168.55.11',
+            port: '5002',
+            caption: ''
+        };
+        videoFeeds.push(feed);
+        this.setState({ videoFeeds });
+        this.saveSettings();
+    };
+
+    removeVideoFeed = id => {
+        console.log(`remove feed id:${id}`);
+        let videoFeeds = [...this.state.videoFeeds];
+        videoFeeds = videoFeeds.filter(feed => feed.id !== id);
+        this.setState({ videoFeeds });
+        this.saveSettings();
+    };
+
+    editVideoFeed = (e, id, inputField) => {
+        let videoFeeds = [...this.state.videoFeeds];
+        // get just the matching one
+        const feeds = videoFeeds.filter(feed => feed.id === id);
+        // console.log(JSON.stringify(feeds));
+        // get all but matching one.
+        videoFeeds = videoFeeds.filter(feed => feed.id !== id);
+        // console.log(JSON.stringify(videoFeeds));
+
+        if (feeds.length > 0) {
+            let feed = feeds[0];
+            // const newFeed = {
+            //     id: feed.id,
+            //     ip: feed.ip,
+            //     port: feed.port,
+            //     caption: feed.caption
+            // };
+            switch (inputField) {
+                case 'ip':
+                    feed.ip = e.target.value.trim();
+                    break;
+                case 'port':
+                    feed.port = e.target.value.trim();
+                    break;
+                case 'caption':
+                    feed.caption = e.target.value.trim();
+                    break;
+                default:
+                    break;
+            }
+            videoFeeds.push(feed);
+            console.log(JSON.stringify(videoFeeds));
+            this.setState({ videoFeeds });
+            this.saveSettings();
+        }
+
+        // console.log(`event: ${e.target.value} id:${id} field: ${inputField}`);
+    };
+
+    saveSettings = () => {
+        // console.log('TODO: save settings to local storage.');
+
+        const state = this.state;
+
+        localStorage.setItem('appState', JSON.stringify(state));
     };
 
     render() {
@@ -52,7 +138,9 @@ class App extends Component {
                 <Settings
                     videoFeeds={this.state.videoFeeds}
                     toggle={this.toggleSettingsPage}
-                    foo='fff'
+                    addFeed={this.addVideoFeed}
+                    removeVideoFeed={this.removeVideoFeed}
+                    editVideoFeed={this.editVideoFeed}
                 />
             );
         }
@@ -65,7 +153,7 @@ class App extends Component {
                         {this.state.videoFeeds.map(feed => (
                             <VideoFeed
                                 key={feed.id}
-                                url={feed.url}
+                                ip={feed.ip}
                                 port={feed.port}
                                 caption={feed.caption}
                             />

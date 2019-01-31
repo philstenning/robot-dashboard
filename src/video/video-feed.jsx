@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class VideoFeed extends Component {
-    url = `http://${this.props.url}:${this.props.port}/video_feed`;
+    url = `http://${this.props.ip}:${this.props.port}/video_feed`;
     // url = `https://explore.org/livecams/player/sharks/shark-cam/`;
 
     render() {
@@ -10,7 +10,9 @@ class VideoFeed extends Component {
                 <figcaption>{this.props.caption}</figcaption>
                 <picture>
                     <img
-                        src={this.url}
+                        src={`http://${this.props.ip}:${
+                            this.props.port
+                        }/video_feed`}
                         alt='raw video feed from opencv on the RPI'
                     />
                 </picture>

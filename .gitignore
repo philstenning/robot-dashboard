@@ -22,3 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Dependency directories
+node_modules/
+
+video_reader/
+openCV-server/
+main-server/
+barcode-server/

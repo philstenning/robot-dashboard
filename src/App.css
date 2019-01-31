@@ -4,6 +4,20 @@ body {
 main {
     position: relative;
 }
+
+button {
+    border: solid 1px #666666;
+    background-color: #1a1a1a;
+    /* min-width: 80px; */
+    color: #f2f2f2;
+    padding: 0px;
+    transition: color 0.2s, background-color 0.2s;
+}
+button:hover {
+    background-color: #f2f2f2;
+
+    color: #1a1a1a;
+}
 .App {
     display: grid;
     grid-template-columns: 340px 1fr;

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
 import { Component } from 'react';
-import { sendDataToControlTrain, subscribeToTrainRemoteControl } from '../api';
+import { sendMovementControl, subscribeToMovementControl } from '../api';
 
 const innerGrid = css`
     text-align: center;
@@ -40,7 +40,7 @@ class Slider extends Component {
     constructor(props) {
         super(props);
 
-        subscribeToTrainRemoteControl((err, data) => {
+        subscribeToMovementControl((err, data) => {
             console.log(data);
             let { direction, speed } = data;
             let sliderValue = 0;
@@ -54,7 +54,7 @@ class Slider extends Component {
                     speed = speed < 0 ? -speed : speed;
                     break;
                 default:
-                    direction = 'Stopped';
+                    direction = 'stopped';
                     speed = 0;
             }
             console.log(sliderValue);
@@ -89,14 +89,14 @@ class Slider extends Component {
         this.setState(state => {
             return { sliderValue: val, direction: direction, speed: speed };
         });
-        sendDataToControlTrain(speed, direction);
+        sendMovementControl(speed, direction);
     }
 
     stopTrain() {
         this.setState(state => {
             return { sliderValue: 0, direction: 'Stopped', speed: Number(0) };
         });
-        sendDataToControlTrain(0, 'Stopped');
+        sendMovementControl(0, 'Stopped');
     }
 
     displayStop() {

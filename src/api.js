@@ -1,19 +1,12 @@
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://192.168.0.4:5000');
-
-function subscribeToTimer(cb) {
-    socket.on('timer', timestamp => cb(null, timestamp));
-    socket.emit('subscribeToTimer', 1000);
-}
+const socket = openSocket('http://192.168.55.11:5001');
 
 function sendData() {
-    socket.emit('robot-data', { it: 'worked' });
+    socket.emit('data', { it: 'worked' });
 }
-function sendDataToControlTrain(speed, direction) {
-    socket.emit('train-control', {
-        speed: Number(speed),
-        direction: direction
-    });
+function sendMovementControl(speed, direction) {
+    const payload = JSON.stringify({ speed, direction });
+    socket.emit('movement-control', payload);
 }
 
 function subscribeToProximitySensor(cb) {
@@ -22,9 +15,11 @@ function subscribeToProximitySensor(cb) {
         cb(null, data);
     });
 }
-function subscribeToTrainRemoteControl(cb) {
-    socket.on('train-remote-control', data => {
-        cb(null, data);
+function subscribeToMovementControl(cb) {
+    socket.on('movement-control', data => {
+        console.log(data);
+        const d = JSON.parse(data);
+        cb(null, d);
     });
 }
 function subscribeToInfo(cb) {
@@ -34,10 +29,9 @@ function subscribeToInfo(cb) {
 }
 
 export {
-    subscribeToTimer,
     sendData,
     subscribeToProximitySensor,
-    subscribeToTrainRemoteControl,
-    sendDataToControlTrain,
+    subscribeToMovementControl,
+    sendMovementControl,
     subscribeToInfo
 };

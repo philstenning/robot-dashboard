@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import { subscribeToInfo } from '../../api';
 import './info.css';
-import Test from './test';
 const uniqueString = require('unique-string');
-
-const Foo = props => (
-    <div className='item'>
-        <h3>{props.title}</h3>
-        hello {props.data}
-    </div>
-);
 
 class Info extends Component {
     state = {
@@ -25,7 +17,7 @@ class Info extends Component {
             // else add new item
             // use header as key for comparison.
             infoItem.header = String(infoItem.header).trim();
-            const result = this.checkInfoItemExistsAndUpdate(infoItem);
+            this.checkInfoItemExistsAndUpdate(infoItem);
             // if (result === -1) {
             //     console.log('info item not found...');
             this.addInfoItem(infoItem);
@@ -57,7 +49,7 @@ class Info extends Component {
         item.id = uniqueString();
         item.time = new Date();
         info.push(item);
-        let v = info.sort((a, b) => {
+        info.sort((a, b) => {
             return new Date(b.time) - new Date(a.time);
         });
         // console.log(v);
